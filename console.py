@@ -10,6 +10,10 @@ from models.state import State
 from models.city import City
 from models.amenity import Amenity
 from models.review import Review
+from datetime import datetime
+import uuid
+import os
+import re
 
 
 class HBNBCommand(cmd.Cmd):
@@ -116,6 +120,7 @@ class HBNBCommand(cmd.Cmd):
     def do_create(self, args):
         """ Create an object of any class"""
         args_list = args.split()
+        ignored_attrs = ('id', 'created_at', 'updated_at', '__class__')
 
         if not args:
             print("** class name missing **")
@@ -140,7 +145,7 @@ class HBNBCommand(cmd.Cmd):
             value = value.strip()
 
             if value.startswith('"') and value.endswith('"'):
-                value = value[1:-1].replace('_', '')
+                value = value[1:-1].replace('', '_')
 
             elif '.' in value:
                 try:
@@ -155,10 +160,13 @@ class HBNBCommand(cmd.Cmd):
 
             formated_params[key] = value
 
-        new_instance = HBNBCommand.classes[class_name](**formated_params)
-        storage.save()
+        new_instance = HBNBCommand.classes[class_name]()
+        for key, value in formated_params.items():
+            if key not in ignored_attrs:
+                setattr(new_instance, key, value)
+        new_instance.save()
         print(new_instance.id)
-        storage.save()
+
 
     def help_create(self):
         """ Help information for the create method """
