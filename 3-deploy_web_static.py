@@ -21,8 +21,10 @@ def do_pack():
             local("mkdir versions")
         file_name = "versions/web_static_{}.tgz".format(date)
         local("tar -cvzf {} web_static".format(file_name))
+        print("Archive created successfully:", file_name)
         return file_name
-    except:
+    except Exception as e:
+        print("Error creating archive:", e)
         return None
 
 
